@@ -1,0 +1,3 @@
+[submodule "Examples/Projects/ESP32_Telegram_DHT_WOL_BROADCAST_UDP"]
+	path = Examples/Projects/ESP32_Telegram_DHT_WOL_BROADCAST_UDP
+	url = https://github.com/ahmadSum1/ESP32_Telegram_DHT_WOL_BROADCAST_UDP.git
