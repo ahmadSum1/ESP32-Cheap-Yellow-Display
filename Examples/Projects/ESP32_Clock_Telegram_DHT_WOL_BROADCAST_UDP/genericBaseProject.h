@@ -67,73 +67,70 @@ ProjectDisplay *projectDisplay = &cyd;
 
 Timezone myTZ;
 
-void baseProjectSetup()
-{
-    projectDisplay->displaySetup();
+void baseProjectSetup() {
+  projectDisplay->displaySetup();
 
-    bool forceConfig = false;
+  bool forceConfig = false;
 
-    drd = new DoubleResetDetector(DRD_TIMEOUT, DRD_ADDRESS);
-    if (drd->detectDoubleReset())
-    {
-        Serial.println(F("Forcing config mode as there was a Double reset detected"));
-        forceConfig = true;
-    }
+  drd = new DoubleResetDetector(DRD_TIMEOUT, DRD_ADDRESS);
+  if (drd->detectDoubleReset()) {
+    Serial.println(F("Forcing config mode as there was a Double reset detected"));
+    forceConfig = true;
+  }
 
-    // Initialise SPIFFS, if this fails try .begin(true)
-    // NOTE: I believe this formats it though it will erase everything on
-    // spiffs already! In this example that is not a problem.
-    // I have found once I used the true flag once, I could use it
-    // without the true flag after that.
-    bool spiffsInitSuccess = SPIFFS.begin(false) || SPIFFS.begin(true);
-    if (!spiffsInitSuccess)
-    {
-        Serial.println("SPIFFS initialisation failed!");
-        while (1)
-            yield(); // Stay here twiddling thumbs waiting
-    }
-    Serial.println("\r\nInitialisation done.");
+  // Initialise SPIFFS, if this fails try .begin(true)
+  // NOTE: I believe this formats it though it will erase everything on
+  // spiffs already! In this example that is not a problem.
+  // I have found once I used the true flag once, I could use it
+  // without the true flag after that.
+  bool spiffsInitSuccess = SPIFFS.begin(false) || SPIFFS.begin(true);
+  if (!spiffsInitSuccess) {
+    Serial.println("SPIFFS initialisation failed!");
+    while (1)
+      yield();  // Stay here twiddling thumbs waiting
+  }
+  Serial.println("\r\nInitialisation done.");
 
-    if (!projectConfig.fetchConfigFile())
-    {
-        // Failed to fetch config file, need to launch Wifi Manager
-        forceConfig = true;
-    }
+  if (!projectConfig.fetchConfigFile()) {
+    // Failed to fetch config file, need to launch Wifi Manager
+    forceConfig = true;
+  }
 
-    // While Wifi is not connected it will not progress past here
-    setupWiFiManager(forceConfig, projectConfig, projectDisplay);
+  // While Wifi is not connected it will not progress past here
+  setupWiFiManager(forceConfig, projectConfig, projectDisplay);
 
-    // Set WiFi to station mode and disconnect from an AP if it was Previously
-    // connected
-    // WiFi.mode(WIFI_STA);
-    // WiFi.begin(ssid, password);
+  // Set WiFi to station mode and disconnect from an AP if it was Previously
+  // connected
+  // WiFi.mode(WIFI_STA);
+  // WiFi.begin(ssid, password);
 
-    while (WiFi.status() != WL_CONNECTED)
-    {
-        Serial.print(".");
-        delay(500);
-    }
+  while (WiFi.status() != WL_CONNECTED) {
+    rgb_LED_BUILTIN.flash(RGBLed::RED, 100);  // Interval 100ms
+    Serial.print(".");
+    delay(300);
+  }
 
-    Serial.println("");
-    Serial.println("WiFi connected");
-    Serial.print("IP address: ");
-    Serial.println(WiFi.localIP());
+  rgb_LED_BUILTIN.brightness(0,255,0, 50);  // 50% brightness
 
-    Serial.println("Waiting for time sync");
+  Serial.println("");
+  Serial.println("WiFi connected");
+  Serial.print("IP address: ");
+  Serial.println(WiFi.localIP());
 
-    waitForSync();
+  Serial.println("Waiting for time sync");
 
-    Serial.println();
-    Serial.println("UTC:             " + UTC.dateTime());
+  waitForSync();
 
-    myTZ.setLocation(projectConfig.timeZone);
-    Serial.print(projectConfig.timeZone);
-    Serial.print(F(":     "));
-    Serial.println(myTZ.dateTime());
-    Serial.println("-------------------------");
+  Serial.println();
+  Serial.println("UTC:             " + UTC.dateTime());
+
+  myTZ.setLocation(projectConfig.timeZone);
+  Serial.print(projectConfig.timeZone);
+  Serial.print(F(":     "));
+  Serial.println(myTZ.dateTime());
+  Serial.println("-------------------------");
 }
 
-void baseProjectLoop()
-{
-    drd->loop();
+void baseProjectLoop() {
+  drd->loop();
 }

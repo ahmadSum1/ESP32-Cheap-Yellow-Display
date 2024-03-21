@@ -9,8 +9,8 @@
 DHT dht(DHTPIN, DHTTYPE);
 
 
-unsigned long previousMillis = 0;  // will store last time LED was updated
-const long interval = 2000;        // interval at which to blink (milliseconds)
+unsigned long previousMillis = 0;  // will store last time was updated
+const long interval = 2000;        // interval at which to sample (milliseconds)
 
 
 void setup_dht() {
@@ -25,7 +25,7 @@ void loop_dht() {
   unsigned long currentMillis = millis();
 
   if (currentMillis - previousMillis >= interval) {
-    // save the last time you blinked the LED
+    // save the last time you took measurement
     previousMillis = currentMillis;
 
     // Reading temperature or humidity takes about 250 milliseconds!
@@ -63,8 +63,8 @@ void loop_dht() {
     //json
     StaticJsonDocument<96> doc;
     doc["Sensor"] = "dht22";
-    doc["Temperature"] = t+0.0001;  //to avoid int casting
-    doc["Humidity"] = h+0.0001;     //to avoid int casting
+    doc["Temperature"] = t + 0.0001;  //to avoid int casting
+    doc["Humidity"] = h + 0.0001;     //to avoid int casting
     doc["Heat Index"] = hic;
     dht_output = "";
     serializeJson(doc, dht_output);
@@ -73,11 +73,15 @@ void loop_dht() {
     Serial.println(dht_output);
 
     if (WiFi.status() == WL_CONNECTED) {
+      if (ledState) {
+        rgb_LED_BUILTIN.brightness(0,255,0, 25);  // 50% brightness
+      }
       // UDP broadcast
       loop_asudp(dht_output);
-    }
-    else{
+    } else {
       Serial.println("No Wifi...");
+
+      rgb_LED_BUILTIN.flash(RGBLed::RED, 50);  // Interval 100ms
     }
   }
 }

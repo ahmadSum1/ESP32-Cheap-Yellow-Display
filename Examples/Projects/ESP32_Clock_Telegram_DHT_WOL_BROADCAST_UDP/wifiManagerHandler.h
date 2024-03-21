@@ -75,8 +75,11 @@ void setupWiFiManager(bool forceConfig, ProjectConfig config, ProjectDisplay *th
     if (!wm.autoConnect("esp32Project", "brianlough"))
     {
       Serial.println("failed to connect and hit timeout");
+      
+      rgb_LED_BUILTIN.brightness(RGBLed::RED, 50); // 50% brightness
+      
       delay(3000);
-      // if we still have not connected restart and try all over again
+      // if we still have not connected... restart and try all over again
       ESP.restart();
       delay(5000);
     }

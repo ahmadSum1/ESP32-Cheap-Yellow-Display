@@ -222,7 +222,7 @@ void DrawDate()
             sprintf(buffer, "%02d/%02d/%d", mth, dd, yr);
         }
 
-        tft.setTextSize(4);
+        tft.setTextSize(3);
         int h = tft.fontHeight();
         tft.fillRect(0, 210 - h, 320, h, TFT_BLACK);
 
@@ -230,7 +230,7 @@ void DrawDate()
 
         int dow = weekday(local);
         String dayNames[] = {"", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
-        tft.setTextSize(4);
+        tft.setTextSize(3);
         tft.fillRect(0, 170 - h, 320, h, TFT_BLACK);
         tft.drawString(dayNames[dow], 320 / 2, 170);
     }
