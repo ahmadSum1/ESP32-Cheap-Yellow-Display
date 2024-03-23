@@ -32,6 +32,10 @@ void setup()
     // You will be fully connected by the time you are here
 
     rollingClockSetup(projectConfig.twentyFourHour, projectConfig.usDateFormat);
+
+    // Set the rotation angle of the screen display, the parameters are: 0, 1, 2, 3
+    // Represent 0°(antenna UP), 90°(Landscape), 180°(usbport UP), 270°(Landscape)
+    tft.setRotation(3);
 }
 
 bool first = true;

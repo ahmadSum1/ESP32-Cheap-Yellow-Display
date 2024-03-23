@@ -1,3 +1,6 @@
+#include <Arduino.h>
+// #include <WiFi.h>
+
 /*********
   Rui Santos
   Complete project details at https://randomnerdtutorials.com  

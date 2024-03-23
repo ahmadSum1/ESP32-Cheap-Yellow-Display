@@ -52,13 +52,11 @@
    GNU GPL license, all text above must be included in any redistribution,
    see link for details - https://www.gnu.org/licenses/licenses.html
 */
+// Modified by @ahmadSum1 on 23.03.2024 
 /***************************************************************************************************/
 
 #include <Wire.h>
 #include <AHTxx.h>
-#if defined(ESP8266)
-#include <ESP8266WiFi.h>
-#endif
 
 #define I2C_SDA 27
 #define I2C_SCL 22

@@ -1,3 +1,4 @@
 .pio
 .vscode
 **/arduino_secrets*
+.gitignore
