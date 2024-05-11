@@ -51,9 +51,10 @@
 
 // ----------------------------
 
-// Change ssid and password for your local WiFi.
-const char* ssid     = "YOUR-SSID"; // Change this to your WiFi SSID
-const char* password = "YOUR-PASSWORD"; // Change this to your WiFi password
+#include "arduino_secrets.h" 
+///////please enter your sensitive data in the Secret tab/arduino_secrets.h
+char ssid[] = SECRET_SSID;        // your network SSID (name)
+char password[] = SECRET_PASS;    // your network password (use for WPA, or use as key for WEP)
 
 TFT_eSPI tft = TFT_eSPI();
 Audio audio(true, I2S_DAC_CHANNEL_LEFT_EN);

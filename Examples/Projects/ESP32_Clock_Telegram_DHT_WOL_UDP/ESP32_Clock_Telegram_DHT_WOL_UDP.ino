@@ -9,7 +9,7 @@
       Project created using Brian Lough's Universal Telegram Bot Library: https://github.com/witnessmenow/Universal-Arduino-Telegram-Bot
       Example based on the Universal Arduino Telegram Bot Library: https://github.com/witnessmenow/Universal-Arduino-Telegram-Bot/blob/master/examples/ESP8266/FlashLED/FlashLED.ino
 
-  Up Date: 21.03.2024
+  Up Date: 11.05.2024
 
 */
 
@@ -39,7 +39,7 @@ unsigned long lastTimeBotRan;
 // const int ledPin = LED_BUILTIN;
 bool ledState = HIGH;
 
-#include <RGBLed.h>
+#include <RGBLed.h>   //https://github.com/wilmouths/RGBLed.git#v1.0.10
 
 #define CYD_LED_BLUE 17
 #define CYD_LED_RED 4
@@ -47,7 +47,7 @@ bool ledState = HIGH;
 
 RGBLed rgb_LED_BUILTIN(CYD_LED_RED, CYD_LED_GREEN, CYD_LED_BLUE, RGBLed::COMMON_ANODE);  //active low
 
-
+#define aht21   //or dht22
 String dht_output = "";
 
 // Handle what happens when you receive new messages
@@ -134,10 +134,10 @@ void setup() {
   setup_WoL();
 
   // setup DHT
-  setup_dht();
+  setup_ht();
 
   //async udp
-  setup_asudp();
+  // setup_asudp();
 }
 
 void loop() {
@@ -157,5 +157,5 @@ void loop() {
     lastTimeBotRan = millis();
   }
   // read temp humidty
-  loop_dht();
+  loop_ht();
 }

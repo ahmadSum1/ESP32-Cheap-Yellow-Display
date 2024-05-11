@@ -52,7 +52,7 @@
    GNU GPL license, all text above must be included in any redistribution,
    see link for details - https://www.gnu.org/licenses/licenses.html
 */
-// Modified by @ahmadSum1 on 23.03.2024 
+// Modified by @ahmadSum1 on 23.03.2024
 /***************************************************************************************************/
 
 #include <Wire.h>
@@ -62,10 +62,12 @@
 #define I2C_SCL 22
 
 
-float ahtValue;                               //to store T/RH result
+float ahtValue;  //to store T/RH result
 
-AHTxx aht20(AHTXX_ADDRESS_X38, AHT2x_SENSOR); //sensor address, sensor type
+AHTxx aht20(AHTXX_ADDRESS_X38, AHT2x_SENSOR);  //sensor address, sensor type
 
+#include "DHT.h"
+DHT dht(21, DHT21);
 
 
 /**************************************************************************/
@@ -75,16 +77,14 @@ AHTxx aht20(AHTXX_ADDRESS_X38, AHT2x_SENSOR); //sensor address, sensor type
     Main setup
 */
 /**************************************************************************/
-void setup()
-{
+void setup() {
 
   // Wire.begin(I2C_SDA, I2C_SCL);
   Serial.begin(115200);
   Serial.println();
-  
-  while (aht20.begin(I2C_SDA, I2C_SCL) != true)
-  {
-    Serial.println(F("AHT2x not connected or fail to load calibration coefficient")); //(F()) save string to flash & keeps dynamic memory free
+
+  while (aht20.begin(I2C_SDA, I2C_SCL) != true) {
+    Serial.println(F("AHT2x not connected or fail to load calibration coefficient"));  //(F()) save string to flash & keeps dynamic memory free
 
     delay(5000);
   }
@@ -102,80 +102,75 @@ void setup()
      Main loop
 */
 /**************************************************************************/
-void loop()
-{
+void loop() {
   /* DEMO - 1, every temperature or humidity call will read 6-bytes over I2C, total 12-bytes */
   Serial.println();
   Serial.println(F("DEMO 1: read 12-bytes"));
 
-  ahtValue = aht20.readTemperature(); //read 6-bytes via I2C, takes 80 milliseconds
-
+  ahtValue = aht20.readTemperature();  //read 6-bytes via I2C, takes 80 milliseconds
+  int t = ahtValue;
   Serial.print(F("Temperature...: "));
-  
-  if (ahtValue != AHTXX_ERROR) //AHTXX_ERROR = 255, library returns 255 if error occurs
+
+  if (ahtValue != AHTXX_ERROR)  //AHTXX_ERROR = 255, library returns 255 if error occurs
   {
     Serial.print(ahtValue);
     Serial.println(F(" +-0.3C"));
-  }
-  else
-  {
-    printStatus(); //print temperature command status
+  } else {
+    printStatus();  //print temperature command status
 
-    if   (aht20.softReset() == true) Serial.println(F("reset success")); //as the last chance to make it alive
-    else                             Serial.println(F("reset failed"));
+    if (aht20.softReset() == true) Serial.println(F("reset success"));  //as the last chance to make it alive
+    else Serial.println(F("reset failed"));
   }
 
-  delay(2000); //measurement with high frequency leads to heating of the sensor, see NOTE
+  // delay(2000);  //measurement with high frequency leads to heating of the sensor, see NOTE
 
-  ahtValue = aht20.readHumidity(); //read another 6-bytes via I2C, takes 80 milliseconds
-
+  ahtValue = aht20.readHumidity();  //read another 6-bytes via I2C, takes 80 milliseconds
+  int h = ahtValue;
   Serial.print(F("Humidity......: "));
-  
-  if (ahtValue != AHTXX_ERROR) //AHTXX_ERROR = 255, library returns 255 if error occurs
+
+  if (ahtValue != AHTXX_ERROR)  //AHTXX_ERROR = 255, library returns 255 if error occurs
   {
     Serial.print(ahtValue);
     Serial.println(F(" +-2%"));
-  }
-  else
-  {
-    printStatus(); //print humidity command status
+  } else {
+    printStatus();  //print humidity command status
   }
 
-  delay(2000); //measurement with high frequency leads to heating of the sensor, see NOTE
+  // delay(2000);  //measurement with high frequency leads to heating of the sensor, see NOTE
 
   /* DEMO - 2, temperature call will read 6-bytes via I2C, humidity will use same 6-bytes */
   Serial.println();
   Serial.println(F("DEMO 2: read 6-byte"));
 
-  ahtValue = aht20.readTemperature(); //read 6-bytes via I2C, takes 80 milliseconds
+  ahtValue = aht20.readTemperature();  //read 6-bytes via I2C, takes 80 milliseconds
 
   Serial.print(F("Temperature: "));
-  
-  if (ahtValue != AHTXX_ERROR) //AHTXX_ERROR = 255, library returns 255 if error occurs
+
+  if (ahtValue != AHTXX_ERROR)  //AHTXX_ERROR = 255, library returns 255 if error occurs
   {
     Serial.print(ahtValue);
     Serial.println(F(" +-0.3C"));
-  }
-  else
-  {
-    printStatus(); //print temperature command status
+  } else {
+    printStatus();  //print temperature command status
   }
 
-  ahtValue = aht20.readHumidity(AHTXX_USE_READ_DATA); //use 6-bytes from temperature reading, takes zero milliseconds!!!
+  ahtValue = aht20.readHumidity(AHTXX_USE_READ_DATA);  //use 6-bytes from temperature reading, takes zero milliseconds!!!
 
   Serial.print(F("Humidity...: "));
-  
-  if (ahtValue != AHTXX_ERROR) //AHTXX_ERROR = 255, library returns 255 if error occurs
+
+  if (ahtValue != AHTXX_ERROR)  //AHTXX_ERROR = 255, library returns 255 if error occurs
   {
     Serial.print(ahtValue);
     Serial.println(F(" +-2%"));
+  } else {
+    printStatus();  //print temperature command status not humidity!!! RH measurement use same 6-bytes from T measurement
   }
-  else
-  {
-    printStatus(); //print temperature command status not humidity!!! RH measurement use same 6-bytes from T measurement
-  }
+  float hic = dht.computeHeatIndex(t, h, false);
+  Serial.print("hic: ");
+  Serial.println(hic);
 
-  delay(10000); //recomended polling frequency 8sec..30sec
+
+  delay(2000);  //recomended polling frequency 8sec..30sec
 }
 
 
@@ -186,10 +181,8 @@ void loop()
     Print last command status
 */
 /**************************************************************************/
-void printStatus()
-{
-  switch (aht20.getStatus())
-  {
+void printStatus() {
+  switch (aht20.getStatus()) {
     case AHTXX_NO_ERROR:
       Serial.println(F("no error"));
       break;
@@ -211,7 +204,7 @@ void printStatus()
       break;
 
     default:
-      Serial.println(F("unknown status"));    
+      Serial.println(F("unknown status"));
       break;
   }
 }

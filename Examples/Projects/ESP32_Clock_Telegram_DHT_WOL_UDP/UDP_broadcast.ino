@@ -31,7 +31,7 @@ void setup_asudp() {
   }
 }
 
-void loop_asudp(String msg) {
+void asudp_pub(String msg) {
   //Send broadcast
   Serial.println("Broadcasting to port: 4040");
   udp.broadcast(msg.c_str());
